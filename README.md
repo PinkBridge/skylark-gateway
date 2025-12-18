@@ -1,1 +1,1 @@
-# -skylark-gateway
+# skylark-gateway
