@@ -1,0 +1,53 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: skylark-gateway
+  cloud:
+    gateway:
+      globalcors:
+        cors-configurations:
+          "[/**]":
+            allowedOriginPatterns: "*"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - PATCH
+              - DELETE
+              - OPTIONS
+            allowedHeaders: "*"
+            allowCredentials: true
+      routes:
+        - id: permission-api-service
+          uri: ${services.permission.uri:http://localhost:9527}
+          predicates:
+            - Path=/api/permission/**
+        - id: permission-oauth-service
+          uri: ${services.permission.uri:http://localhost:9527}
+          predicates:
+            - Path=/oauth/**
+          filters:
+            - RewritePath=/oauth/(?<segment>.*), /oauth/${segment}
+        - id: iot-service
+          uri: ${services.iot.uri:http://localhost:8088}
+          predicates:
+            - Path=/api/iot/**
+          filters:
+            - RewritePath=/api/iot/(?<segment>.*), /api/${segment}
+        - id: xiaolvxingqiu-service
+          uri: ${services.xiaolvxingqiu.uri:http://localhost:8086}
+          predicates:
+            - Path=/api/xiaolvxingqiu/**  
+          filters:
+            - RewritePath=/api/xiaolvxingqiu/(?<segment>.*), /xiaolvxingqiu/api/${segment}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,gateway
+  endpoint:
+    health:
+      show-details: always
